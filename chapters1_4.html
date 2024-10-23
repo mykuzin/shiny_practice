@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>mast_shiny_ch1_5</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="chapters1_4_files/libs/clipboard/clipboard.min.js"></script>
+<script src="chapters1_4_files/libs/quarto-html/quarto.js"></script>
+<script src="chapters1_4_files/libs/quarto-html/popper.min.js"></script>
+<script src="chapters1_4_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="chapters1_4_files/libs/quarto-html/anchor.min.js"></script>
+<link href="chapters1_4_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="chapters1_4_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="chapters1_4_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="chapters1_4_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="chapters1_4_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">mast_shiny_ch1_5</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="what-is-shiny" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-shiny"><strong>0.1 What is Shiny?</strong></h2>
+<p>Shiny is an R package that allows you to easily create rich, interactive web apps. Shiny allows you to take your work in R and expose it via a web browser so that anyone can use it.</p>
+<p>Shiny makes it significantly easier for the R programmer to create web apps by:</p>
+<ul>
+<li><p>Providing a carefully curated set of user interface (<strong>UI</strong> for short) functions that generate the HTML, CSS, and JavaScript needed for common tasks. This means that you don’t need to know the details of HTML/CSS/JavaScript until you want to go beyond the basics that Shiny provides for you.</p></li>
+<li><p>Introducing a new style of programming called <strong>reactive programming</strong> which automatically tracks the dependencies of pieces of code. This means that whenever an input changes, Shiny can automatically figure out how to do the smallest amount of work to update all the related outputs.</p></li>
+</ul>
+<p>What you won’t learn:</p>
+<ul>
+<li>This book only covers the built-in user interface toolkit. This doesn’t provide the sexiest possible design</li>
+<li>Deployment of Shiny apps. Putting Shiny “into production” is outside the scope of this book because it hugely varies from company to company, and much of it is unrelated to R (the majority of challenges tend to be cultural or organisational, not technical).</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"gapminder"</span>, <span class="st">"ggforce"</span>, <span class="st">"gh"</span>, <span class="st">"globals"</span>, <span class="st">"openintro"</span>, <span class="st">"profvis"</span>, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"RSQLite"</span>, <span class="st">"shiny"</span>, <span class="st">"shinycssloaders"</span>, <span class="st">"shinyFeedback"</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"shinythemes"</span>, <span class="st">"testthat"</span>, <span class="st">"thematic"</span>, <span class="st">"tidyverse"</span>, <span class="st">"vroom"</span>, </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"waiter"</span>, <span class="st">"xml2"</span>, <span class="st">"zeallot"</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>but complete, showing you all the major pieces of an app and how they fit together. Then in Chapters&nbsp;2&nbsp;and&nbsp;3&nbsp;you’ll start to get into the details of the two major parts of a Shiny app: the frontend (what the user sees in the browser) and the backend (the code that makes it all work).&nbsp;</p>
+</section>
+<section id="your-first-shiny-app" class="level1">
+<h1><strong>1 Your first Shiny app</strong></h1>
+<p>the two key components of every Shiny app: the&nbsp;<strong>UI</strong>&nbsp;(short for user interface) which defines how your app&nbsp;<em>looks</em>, and the&nbsp;<strong>server function</strong>&nbsp;which defines how your app&nbsp;<em>works</em>. Shiny uses&nbsp;<strong>reactive programming</strong>&nbsp;to automatically update outputs when inputs change so we’ll finish off the chapter by learning the third important component of Shiny apps: reactive expressions.</p>
+<section id="create-app-directory-and-file" class="level2">
+<h2 class="anchored" data-anchor-id="create-app-directory-and-file"><strong>1.2 Create app directory and file</strong></h2>
+<p>There are several ways to create a Shiny app. The simplest is to create a new directory for your app, and put a single file called <code>app.R</code> in it. This <code>app.R</code> file will be used to tell Shiny both how your app should look, and how it should behave.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hello, world!"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>By defining a <code>server</code> function , we specifies the behaviour of our app . It’s currently empty, so our app doesn’t <em>do</em> anything, but we’ll be back to revisit this shortly.</p>
+<p><code>shinyApp(ui, server)</code>&nbsp;is executed to construct and start a Shiny application from UI and server.</p>
+</section>
+<section id="running-and-stopping" class="level2">
+<h2 class="anchored" data-anchor-id="running-and-stopping"><strong>1.3 Running and stopping</strong></h2>
+<p>Use a keyboard shortcut:&nbsp;<code>Cmd/Ctrl</code>&nbsp;+&nbsp;<code>Shift</code>&nbsp;+&nbsp;<code>Enter</code></p>
+<p>Before you close the app, go back to RStudio and look at the R console. You’ll notice that it says something like:</p>
+<pre><code>Listening on http://127.0.0.1:3827</code></pre>
+<p>This tells you the URL where your app can be found: 127.0.0.1 is a standard address that means “this computer” and 3827 is a randomly assigned port number. You can enter that URL into any compatible2&nbsp;web browser to open another copy of your app.</p>
+<p>Also notice that R is busy: the R prompt isn’t visible, and the console toolbar displays a stop sign icon. While a Shiny app is running, it “blocks” the R console. This means that you can’t run new commands at the R console until the Shiny app stops.</p>
+<p>The basic workflow of Shiny app development is to write some code, start the app, play with the app, write some more code, and repeat. If you’re using RStudio, you don’t even need to stop and re-start the app to see your changes — you can either press the&nbsp;<strong>Reload app</strong>&nbsp;button in the toolbox or use the&nbsp;<code>Cmd/Ctrl</code>&nbsp;+&nbsp;<code>Shift</code>&nbsp;+&nbsp;<code>Enter</code>&nbsp;keyboard shortcut.&nbsp;</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">selectInput</span>(<span class="st">"dataset"</span>, <span class="at">label =</span> <span class="st">"Dataset"</span>, <span class="at">choices =</span> <span class="fu">ls</span>(<span class="st">"package:datasets"</span>)),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">verbatimTextOutput</span>(<span class="st">"summary"</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tableOutput</span>(<span class="st">"Table"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This example uses four new functions:</p>
+<ul>
+<li><code>fluidPage()</code> is a layout function that sets up the basic visual structure of the page.</li>
+<li><a href="https://rdrr.io/pkg/shiny/man/selectInput.html"><code>selectInput()</code></a>&nbsp;is an&nbsp;<strong>input control</strong>&nbsp;that lets the user interact with the app by providing a value. In this case, it’s a select box with the label “Dataset” and lets you choose one of the built-in datasets that come with R.&nbsp;</li>
+<li><a href="https://rdrr.io/pkg/shiny/man/textOutput.html"><code>verbatimTextOutput()</code></a>&nbsp;and&nbsp;<a href="https://rdrr.io/pkg/shiny/man/renderTable.html"><code>tableOutput()</code></a>&nbsp;are&nbsp;<strong>output controls</strong>&nbsp;that tell Shiny&nbsp;<em>where</em>&nbsp;to put rendered output (we’ll get into the&nbsp;<em>how</em>&nbsp;in a moment).&nbsp;<a href="https://rdrr.io/pkg/shiny/man/textOutput.html"><code>verbatimTextOutput()</code></a>&nbsp;displays code and&nbsp;<a href="https://rdrr.io/pkg/shiny/man/renderTable.html"><code>tableOutput()</code></a>&nbsp;displays tables.</li>
+</ul>
+<p>Layout functions, inputs, and outputs have different uses, but they are fundamentally the same under the covers: they’re all just fancy ways to generate HTML, and if you call any of them outside of a Shiny app, you’ll see HTML printed out at the console.&nbsp;</p>
+<p>We only see the input, not the two outputs, because we haven’t yet told Shiny how the input and outputs are related.</p>
+</section>
+<section id="adding-behaviour" class="level2">
+<h2 class="anchored" data-anchor-id="adding-behaviour"><strong>1.5 Adding behaviour</strong></h2>
+<p>Next, we’ll bring the outputs to life by defining them in the server function.</p>
+<p>Shiny uses <strong>reactive programming</strong> to make apps interactive — for now, just be aware that it involves telling Shiny&nbsp;<em>how</em>&nbsp;to perform a computation, not ordering Shiny to actually go&nbsp;<em>do it</em>. It’s like the difference between giving someone a recipe versus demanding that they go make you a sandwich.</p>
+<p>The left-hand side of the assignment operator (<code>&lt;-</code>),&nbsp;<code>output$ID</code>, indicates that you’re providing the recipe for the Shiny output with that ID. The right-hand side of the assignment uses a specific&nbsp;<strong>render function</strong>&nbsp;to wrap some code that you provide.&nbsp;</p>
+<p>Each&nbsp;<code>render{Type}</code>&nbsp;function is designed to produce a particular type of output (e.g.&nbsp;text, tables, and plots), and is often paired with a&nbsp;<code>{type}Output</code>&nbsp;function. For example, in this app,&nbsp;<a href="https://rdrr.io/pkg/shiny/man/renderPrint.html"><code>renderPrint()</code></a>&nbsp;is paired with&nbsp;<a href="https://rdrr.io/pkg/shiny/man/textOutput.html"><code>verbatimTextOutput()</code></a>&nbsp;to display a statistical summary with fixed-width (verbatim) text, and&nbsp;<a href="https://rdrr.io/pkg/shiny/man/renderTable.html"><code>renderTable()</code></a>&nbsp;is paired with&nbsp;<a href="https://rdrr.io/pkg/shiny/man/renderTable.html"><code>tableOutput()</code></a>&nbsp;to show the input data in a table.</p>
+<p>Notice that the summary and table update whenever you change the input dataset. This dependency is created implicitly because we’ve referred to&nbsp;<code>input$dataset</code>&nbsp;within the output functions.&nbsp;<code>input$dataset</code>&nbsp;is populated with the current value of the UI component with id&nbsp;<code>dataset</code>, and will cause the outputs to automatically update whenever that value changes. This is the essence of&nbsp;<strong>reactivity</strong>: outputs automatically&nbsp;<em>react</em>&nbsp;(recalculate) when their inputs change.</p>
+</section>
+<section id="reducing-duplication-with-reactive-expressions" class="level2">
+<h2 class="anchored" data-anchor-id="reducing-duplication-with-reactive-expressions"><strong>1.6 Reducing duplication with reactive expressions</strong></h2>
+<div class="sourceCode" id="cb5" style="color:gray"><pre class="sourceCode R code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> <span class="fu">get</span>(input<span class="sc">$</span>dataset, <span class="st">"package:datasets"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
